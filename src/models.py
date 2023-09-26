@@ -3,10 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class User(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    def __init__(self, email, password):
+        self.email = email
+        self.password = password
+        self.is_active = True
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -19,6 +25,7 @@ class User(db.Model):
         }
 
 class Character(db.Model):
+    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     url = db.Column(db.String(100), nullable=False)
