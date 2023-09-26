@@ -42,13 +42,11 @@ def sitemap():
 #  Get all users
 @app.route('/users', methods=['GET'])
 def get_users():
-
-    allusers = User.query.all()
-    userlist = list(map(lambda p: p.serialize(), allusers))
-
-    if userlist == []:
-        return {"msg": "no hay usuarios creados"}, 400
-    return jsonify(userlist), 200
+    users = User.query.all()
+    all_users = list(map(lambda x: x.serialize(), users))
+    if all_users == None:
+        return {"Message": "No users created"}, 400
+    return jsonify(all_users), 200
 
 #  Get all user favorites
 @app.route('/users/favorites', methods=['GET'])
@@ -78,10 +76,38 @@ def get_specific_character(character_id):
         return {"Error": "Character not found"}, 400
      return jsonify(character.serialize()), 200
 
+#  Post/create a character
+@app.route('/people', methods=['POST'])
+def create_character():
+
+    body = request.get_json()
+
+    name = body.get("name", None)
+    url = body.get("url", None)
+    height = body.get("height", None)
+    mass = body.get("mass", None)
+    hair_color = body.get("hair_color", None)
+    skin_color = body.get("skin_color", None)
+    eye_color = body.get("eye_color", None)
+    birth_year = body.get("birth_year", None)
+    gender = body.get("gender", None)
+    img = body.get("img", None)
+
+    try:
+        new_character = Character(name=name, url=url, height=height, mass=mass, hair_color=hair_color, skin_color=skin_color, eye_color=eye_color, birth_year=birth_year, gender=gender, img=img)
+
+        db.session.add(new_character)
+        db.session.commit()
+
+        return new_character.serialize(), 200
+    
+    except ValueError as err:
+        return { "Message" : " An unexpected error has ocurred " + err }, 500
+
 #  Post a character as a favorite
 @app.route('/favorite/people/<int:character_id>', methods=['POST'])
-def add_favorite_character():
-    return None
+def add_favorite_character(character_id):
+    pass
 
 #  Delete a character
 @app.route('/favorite/people/<int:character_id>', methods=['DELETE'])
@@ -104,6 +130,34 @@ def get_specific_planet(planet_id):
     if planet == None:
         return {"Error": "Planet not found"}, 400
     return jsonify(planet.serialize()), 200
+
+#  Post/create a planet
+@app.route('/planet', methods=['POST'])
+def planet():
+
+    body = request.get_json()
+
+    name = body.get("name", None)
+    url = body.get("url", None)
+    diameter = body.get("diameter", None)
+    gravity = body.get("gravity", None)
+    population = body.get("population", None)
+    climate = body.get("climate", None)
+    terrain = body.get("terrain", None)
+    surface_water = body.get("surface_water", None)
+    img = body.get("img", None)    
+
+    try:
+        new_planet = Planet(name=name, url=url, diameter=diameter, gravity=gravity, population=population, climate=climate, terrain=terrain, surface_water=surface_water, img=img)
+
+        db.session.add(new_planet)
+        db.session.commit()
+
+        return new_planet.serialize(), 200
+    
+    except ValueError as err:
+        return { "Message" : " An unexpected error has ocurred " + err }, 500
+
 
 #  Post a planet as a favorite
 @app.route('/favorite/planets/<int:planet_id>', methods=['POST'])
