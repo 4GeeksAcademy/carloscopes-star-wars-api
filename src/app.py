@@ -98,7 +98,7 @@ def create_character():
         db.session.add(new_character)
         db.session.commit()
 
-        return new_character.serialize(), 200
+        return {"message": f"The character {new_character.serialize()['name']} with the id: {new_character.serialize()['id']} has been created"} , 200
     
     except ValueError as err:
         return { "Message" : " An unexpected error has ocurred " + err }, 500
@@ -180,17 +180,33 @@ def delete_planet(planet_id):
 
 #  FAVORITES
 
-#  Post a character as a favorite ❌
+#  Post a character as a favorite ✅
 @app.route('/favorite/people/<int:character_id>', methods=['POST'])
-def add_favorite_character(user_id, character_id):
-    character = Character.query.get(character_id)
+def add_favorite_character(character_id):
+    try:
+        body = request.get_json()
+        user_fav = Favorite(user_id=body.get("user_id"), character_id=character_id)
+        db.session.add(user_fav)
+        db.session.commit()
+        return {"message": f"The character has been added to favorites"}, 200
+
+    except ValueError as err:
+        return {"message": "An unexpected error has ocurred"}, 500
 
 #  Delete a character from Favorites ❌
 
-#  Post a planet as a favorite ❌
+#  Post a planet as a favorite ✅
 @app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
-def add_favorite_planet(user_id, planet_id):
-    pass
+def add_favorite_planet(planet_id):
+    try:
+        body = request.get_json()
+        user_fav = Favorite(user_id=body.get("user_id"), planet_id=planet_id)
+        db.session.add(user_fav)
+        db.session.commit()
+        return {"message": f"The planet has been added to favorites"}, 200
+
+    except ValueError as err:
+        return {"message": "An unexpected error has ocurred"}, 500
 
 
 #  Delete a planet from Favorites ❌

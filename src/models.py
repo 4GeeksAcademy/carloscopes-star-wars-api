@@ -15,7 +15,7 @@ class User(db.Model):
         self.is_active = True
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.id
 
     def serialize(self):
         return {
@@ -104,8 +104,8 @@ class Favorite(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "character_id": self.people_id,
-            "character": self.people.name,
+            "character_id": self.character_id,
+            "character": self.character.name,
             "planet_id": self.planet_id,
             "planet": self.planet.name
         }
