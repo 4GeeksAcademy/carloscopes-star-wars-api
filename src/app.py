@@ -36,10 +36,9 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+#  USERS
 
-#  Users
-
-#  Get all users
+#  Get all users ✅
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -48,7 +47,7 @@ def get_users():
         return {"Message": "No users created"}, 400
     return jsonify(all_users), 200
 
-#  Get all user favorites
+#  Get all user favorites ❌
 @app.route('/users/favorites', methods=['GET'])
 def get_favorites_user():
 
@@ -61,14 +60,14 @@ def get_favorites_user():
 
 #  CHARACTERS
 
-#  Get all charactes
+#  Get all characters ✅
 @app.route('/people', methods=['GET'])
 def get_characters():
     characters = Character.query.all()
     all_characters = list(map(lambda x: x.serialize(), characters))
     return jsonify(all_characters), 200
 
-#  Get a specific character by id
+#  Get a specific character by id ✅
 @app.route('/people/<int:character_id>', methods=['GET'])
 def get_specific_character(character_id):
      character = Character.query.get(character_id)
@@ -76,7 +75,7 @@ def get_specific_character(character_id):
         return {"Error": "Character not found"}, 400
      return jsonify(character.serialize()), 200
 
-#  Post/create a character
+#  Post/create a character ✅
 @app.route('/people', methods=['POST'])
 def create_character():
 
@@ -107,23 +106,39 @@ def create_character():
 #  Post a character as a favorite
 @app.route('/favorite/people/<int:character_id>', methods=['POST'])
 def add_favorite_character(character_id):
-    pass
+    character = Character.query.get(character_id)
 
-#  Delete a character
-@app.route('/favorite/people/<int:character_id>', methods=['DELETE'])
-def delete_character():
-        pass
+
+
+
+#  Delete a character ✅
+@app.route('/people/<int:character_id>', methods=['DELETE'])
+def delete_character(character_id):
+    try:
+        specific_character = Character.query.get(character_id)
+        if specific_character == None:
+            return {"message": f"Characte with id {character_id} doesn't exist"}, 400
+        else:
+            db.session.delete(specific_character)
+            db.session.commit()
+            return {"message": f"{specific_character.serialize()['name']} has been deleted"}
+
+    except ValueError as err:
+        return {"message": "Character deletion failed"}, 500
+
+
+#  Delete a character from Favorites ❌
 
 #  PLANETS
 
-#  Get all planets
+#  Get all planets ✅
 @app.route('/planets', methods=['GET'])
 def get_planets():
     planets = Planet.query.all()
     all_planets = list(map(lambda x: x.serialize(), planets))
     return jsonify(all_planets), 200
 
-#  Get a specific planet by id
+#  Get a specific planet by id ✅
 @app.route('/planet/<int:planet_id>', methods=['GET'])
 def get_specific_planet(planet_id):
     planet = Planet.query.get(planet_id)
@@ -131,7 +146,7 @@ def get_specific_planet(planet_id):
         return {"Error": "Planet not found"}, 400
     return jsonify(planet.serialize()), 200
 
-#  Post/create a planet
+#  Post/create a planet ✅
 @app.route('/planet', methods=['POST'])
 def planet():
 
@@ -159,15 +174,26 @@ def planet():
         return { "Message" : " An unexpected error has ocurred " + err }, 500
 
 
-#  Post a planet as a favorite
+#  Post a planet as a favorite ❌
 @app.route('/favorite/planets/<int:planet_id>', methods=['POST'])
 def add_favorite_planet():
-        pass
+    pass
 
-#  Delete a planet
-@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
-def delete_planet():
-        pass
+#  Delete a planet ✅
+@app.route('/planet/<int:planet_id>', methods=['DELETE'])
+def delete_planet(planet_id):
+    try:
+        specific_planet = Planet.query.get(planet_id)
+        if specific_planet == None:
+            return {"message": f"Characte with id {planet_id} doesn't exist"}, 400
+        else:
+            db.session.delete(specific_planet)
+            db.session.commit()
+            return {"message": f"{specific_planet.serialize()['name']} has been deleted"}
+    except ValueError as err:
+        return {"message": "Planet deletion failed"}, 500
+
+#  Delete a planet from Favorites ❌
     
 
 # this only runs if `$ python src/app.py` is executed
