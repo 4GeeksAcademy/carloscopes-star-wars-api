@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Character, Planet, FavoriteCharacter, FavoritePlanet
+from models import db, User, Character, Planet, Favorite
 #from models import Person
 
 app = Flask(__name__)
@@ -103,14 +103,6 @@ def create_character():
     except ValueError as err:
         return { "Message" : " An unexpected error has ocurred " + err }, 500
 
-#  Post a character as a favorite
-@app.route('/favorite/people/<int:character_id>', methods=['POST'])
-def add_favorite_character(character_id):
-    character = Character.query.get(character_id)
-
-
-
-
 #  Delete a character ✅
 @app.route('/people/<int:character_id>', methods=['DELETE'])
 def delete_character(character_id):
@@ -126,8 +118,6 @@ def delete_character(character_id):
     except ValueError as err:
         return {"message": "Character deletion failed"}, 500
 
-
-#  Delete a character from Favorites ❌
 
 #  PLANETS
 
@@ -173,12 +163,6 @@ def planet():
     except ValueError as err:
         return { "Message" : " An unexpected error has ocurred " + err }, 500
 
-
-#  Post a planet as a favorite ❌
-@app.route('/favorite/planets/<int:planet_id>', methods=['POST'])
-def add_favorite_planet():
-    pass
-
 #  Delete a planet ✅
 @app.route('/planet/<int:planet_id>', methods=['DELETE'])
 def delete_planet(planet_id):
@@ -192,6 +176,22 @@ def delete_planet(planet_id):
             return {"message": f"{specific_planet.serialize()['name']} has been deleted"}
     except ValueError as err:
         return {"message": "Planet deletion failed"}, 500
+
+
+#  FAVORITES
+
+#  Post a character as a favorite ❌
+@app.route('/favorite/people/<int:character_id>', methods=['POST'])
+def add_favorite_character(user_id, character_id):
+    character = Character.query.get(character_id)
+
+#  Delete a character from Favorites ❌
+
+#  Post a planet as a favorite ❌
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
+def add_favorite_planet(user_id, planet_id):
+    pass
+
 
 #  Delete a planet from Favorites ❌
     
