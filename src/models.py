@@ -37,7 +37,7 @@ class Character(db.Model):
     birth_year = db.Column(db.String(50), nullable=False)
     gender = db.Column(db.String(50), nullable=False)
     img = db.Column(db.String(100), nullable=False)
-
+    
     def __repr__(self):
         return f"<Character {self.name}>"
 
@@ -101,11 +101,17 @@ class Favorite(db.Model):
         return f"<Favorite {self.id}>"
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "character_id": self.character_id,
-            "character": self.character.name,
-            "planet_id": self.planet_id,
-            "planet": self.planet.name
-        }
+        if self.character is not None:
+            return {
+                "id": self.id,
+                "user_id": self.user_id,
+                "character_id": self.character_id,
+                "character": self.character.name
+            }
+        if self.planet is not None:
+            return {
+                "id": self.id,
+                "user_id": self.user_id,
+                "planet_id": self.planet_id,
+                "planet": self.planet.name
+            }

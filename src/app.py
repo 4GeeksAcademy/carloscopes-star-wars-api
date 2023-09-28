@@ -38,7 +38,7 @@ def sitemap():
 
 #  USERS
 
-#  Get all users ✅
+#  Get all users
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -47,27 +47,25 @@ def get_users():
         return {"Message": "No users created"}, 400
     return jsonify(all_users), 200
 
-#  Get all user favorites ❌
-@app.route('/users/favorites', methods=['GET'])
-def get_favorites_user():
+#  Get all user favorites
+@app.route('/users/favorites/<int:user_id>', methods=['GET'])
+def get_user_favorites(user_id): 
+    favorites_list = Favorite.query.all()
+    all_favorites = list(map(lambda x: x.serialize(), favorites_list))
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
-    return jsonify(response_body), 200
+    return jsonify(all_favorites), 200
 
 
 #  CHARACTERS
 
-#  Get all characters ✅
+#  Get all characters
 @app.route('/people', methods=['GET'])
 def get_characters():
     characters = Character.query.all()
     all_characters = list(map(lambda x: x.serialize(), characters))
     return jsonify(all_characters), 200
 
-#  Get a specific character by id ✅
+#  Get a specific character by id
 @app.route('/people/<int:character_id>', methods=['GET'])
 def get_specific_character(character_id):
      character = Character.query.get(character_id)
@@ -75,7 +73,7 @@ def get_specific_character(character_id):
         return {"Error": "Character not found"}, 400
      return jsonify(character.serialize()), 200
 
-#  Post/create a character ✅
+#  Post/create a character
 @app.route('/people', methods=['POST'])
 def create_character():
 
@@ -103,7 +101,7 @@ def create_character():
     except ValueError as err:
         return { "Message" : " An unexpected error has ocurred " + err }, 500
 
-#  Delete a character ✅
+#  Delete a character
 @app.route('/people/<int:character_id>', methods=['DELETE'])
 def delete_character(character_id):
     try:
@@ -121,14 +119,14 @@ def delete_character(character_id):
 
 #  PLANETS
 
-#  Get all planets ✅
+#  Get all planets
 @app.route('/planets', methods=['GET'])
 def get_planets():
     planets = Planet.query.all()
     all_planets = list(map(lambda x: x.serialize(), planets))
     return jsonify(all_planets), 200
 
-#  Get a specific planet by id ✅
+#  Get a specific planet by id
 @app.route('/planet/<int:planet_id>', methods=['GET'])
 def get_specific_planet(planet_id):
     planet = Planet.query.get(planet_id)
@@ -136,7 +134,7 @@ def get_specific_planet(planet_id):
         return {"Error": "Planet not found"}, 400
     return jsonify(planet.serialize()), 200
 
-#  Post/create a planet ✅
+#  Post/create a planet
 @app.route('/planet', methods=['POST'])
 def planet():
 
@@ -163,7 +161,7 @@ def planet():
     except ValueError as err:
         return { "Message" : " An unexpected error has ocurred " + err }, 500
 
-#  Delete a planet ✅
+#  Delete a planet
 @app.route('/planet/<int:planet_id>', methods=['DELETE'])
 def delete_planet(planet_id):
     try:
@@ -180,7 +178,7 @@ def delete_planet(planet_id):
 
 #  FAVORITES
 
-#  Post a character as a favorite ✅
+#  Post a character as a favorite
 @app.route('/favorite/people/<int:character_id>', methods=['POST'])
 def add_favorite_character(character_id):
     try:
@@ -193,9 +191,15 @@ def add_favorite_character(character_id):
     except ValueError as err:
         return {"message": "An unexpected error has ocurred"}, 500
 
-#  Delete a character from Favorites ❌
+#  Delete a character from Favorites
+@app.route('/favorite/people/<int:character_id>', methods=['DELETE'])
+def delete_favorite_character(character_id):
+    specific_character = Favorite.query.get(character_id)
+    db.session.delete(specific_character)
+    db.session.commit()
+    return {"message": f"The character was succesfully removed from your favorites list"}
 
-#  Post a planet as a favorite ✅
+#  Post a planet as a favorite
 @app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
 def add_favorite_planet(planet_id):
     try:
@@ -209,7 +213,13 @@ def add_favorite_planet(planet_id):
         return {"message": "An unexpected error has ocurred"}, 500
 
 
-#  Delete a planet from Favorites ❌
+#  Delete a planet from Favorites
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_favorite_planet(planet_id):
+    specific_planet = Favorite.query.get(planet_id)
+    db.session.delete(specific_planet)
+    db.session.commit()
+    return {"message": f"The planet was succesfully removed from your favorites list"}
     
 
 # this only runs if `$ python src/app.py` is executed
