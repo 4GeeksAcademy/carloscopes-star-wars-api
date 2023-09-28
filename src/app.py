@@ -36,6 +36,8 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+#  A PESAR DE QUE TODOS LOS ENDPOINTS CUMPLAN SU FUNCIÓN, POR FAVOR DEJAR FEEDBACK DE QUÉ PODRÍA MEJORAR
+
 #  USERS
 
 #  Get all users
